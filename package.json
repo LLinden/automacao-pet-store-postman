@@ -1,0 +1,11 @@
+{
+  "name": "pet-store",
+  "version": "1.0.0",
+  "description": "exercicio de testes de api com postman",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run ./pet-store-tests/pet-store-api.json -e ./pet-store-tests/variaveis-ambiente.json -r html"
+  },
+  "author": "lucas linden",
+  "license": "ISC"
+}

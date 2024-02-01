@@ -1,0 +1,253 @@
+{
+	"info": {
+		"_postman_id": "9f34581c-dbd4-4c8c-9b36-74ca5fbd4ff0",
+		"name": "Pet Store API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12826620"
+	},
+	"item": [
+		{
+			"name": "Pet",
+			"item": [
+				{
+					"name": "/pet",
+					"item": [
+						{
+							"name": "Adiciona um novo pet na loja",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// gera número aleatório\r",
+											"pm.globals.set(\"numeroAleatorio\", Math.floor(Math.random() * 100) + 1);\r",
+											"\r",
+											"\r",
+											"// pega um nome aleatório da lista\r",
+											"var nomes = [\"Totó\", \"Rex\", \"Monteiro\", \"Bolinha\"]\r",
+											"var indiceAleatorio = Math.floor(Math.random() * nomes.length);\r",
+											"var nomeAleatorio = nomes[indiceAleatorio];\r",
+											"pm.environment.set(\"nomeAleatorio\", nomeAleatorio);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var  nomeAleatorioGerado = pm.globals.get(\"nomeAleatorio\");\r",
+											"pm.test(\"Valida se o atributo nome retornado está correto\", function () {\r",
+											"    pm.expect(pm.response.name).to.eql(nomeAleatorioGerado)\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": {{numeroAleatorio}},\r\n  \"category\": {\r\n    \"id\": {{numeroAleatorio}},\r\n    \"name\": \"{{$randomWord}}\"\r\n  },\r\n  \"name\": \"{{nomeAleatorio}}\",\r\n  \"photoUrls\": [\r\n    \"{{$randomUrl}}\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": {{numeroAleatorio}},\r\n      \"name\": \"{{$randomWord}}\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{petUrl}}",
+									"host": [
+										"{{petUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Tenta adicionar um novo pet com atributo id com formato inválido",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// gera número aleatório\r",
+											"pm.globals.set(\"numeroAleatorio\", Math.floor(Math.random() * 100) + 1);\r",
+											"\r",
+											"\r",
+											"// pega um nome aleatório da lista\r",
+											"var nomes = [\"Totó\", \"Rex\", \"Monteiro\", \"Bolinha\"]\r",
+											"var indiceAleatorio = Math.floor(Math.random() * nomes.length);\r",
+											"var nomeAleatorio = nomes[indiceAleatorio];\r",
+											"pm.environment.set(\"nomeAleatorio\", nomeAleatorio);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(500);\r",
+											"});\r",
+											"\r",
+											"var responseBody = pm.response.json();\r",
+											"pm.test(\"Valida a mensagem de erro retornada\", function () {\r",
+											"    pm.expect(responseBody.message).to.equal(\"something bad happened\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"texto\",\r\n  \"category\": {\r\n    \"id\": {{numeroAleatorio}},\r\n    \"name\": \"{{$randomWord}}\"\r\n  },\r\n  \"name\": \"{{nomeAleatorio}}\",\r\n  \"photoUrls\": [\r\n    \"{{$randomUrl}}\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": {{numeroAleatorio}},\r\n      \"name\": \"{{$randomWord}}\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{petUrl}}",
+									"host": [
+										"{{petUrl}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "/pet/findByStatus",
+					"item": [
+						{
+							"name": "Busca pets por status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let status = pm.collectionVariables.get(\"status\");\r",
+											"\r",
+											"if(!status || status.length == 0) {\r",
+											"    status = [\"available\", \"pending\", \"sold\"];\r",
+											"}\r",
+											"\r",
+											"let currentStatus = status.shift();\r",
+											"console.log(currentStatus)\r",
+											"pm.collectionVariables.set(\"status\", currentStatus);\r",
+											"pm.collectionVariables.set(\"status\", status);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const status = pm.collectionVariables.get(\"status\");\r",
+											"\r",
+											"if (status && status.length > 0){\r",
+											"    postman.setNextRequest(\"Busca pets por status\");\r",
+											"} else {\r",
+											"    postman.setNextRequest(null);\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Valida se o status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida a presença do atributo status\", function () {\r",
+											"    pm.expect(pm.response).to.have.property(\"status\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{petUrl}}findByStatus?status={{status}}",
+									"host": [
+										"{{petUrl}}findByStatus"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "{{status}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Store",
+			"item": [
+				{
+					"name": "/inventory",
+					"item": [
+						{
+							"name": "Retorna o invetórios de pets",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Valida se o status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida que o JSON retornando não é null\", function () {\r",
+											"    pm.expect(pm.response.json()).to.not.be.null;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{storeUrl}}inventory",
+									"host": [
+										"{{storeUrl}}inventory"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "status",
+			"value": ""
+		}
+	]
+}
